@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1020" viewBox="0 0 1680 1020" role="img" aria-labelledby="title desc">
+  <title id="title">pm_predictor lookup and update structure</title>
+  <desc id="desc">The branch address and four-bit global history form indices for the bimodal and global predictor tables. A matching valid global tag selects the global entry and its single counter; otherwise the bimodal counter is used. The actual outcome trains the counters and advances the history.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#263238"/>
+    </marker>
+    <marker id="update-arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 z" fill="#b45309"/>
+    </marker>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #17212b; }
+      .title { font-size: 28px; font-weight: 700; }
+      .label { font-size: 18px; font-weight: 700; }
+      .body { font-size: 15px; }
+      .small { font-size: 13px; }
+      .tiny { font-size: 11px; }
+      .block { fill: #f7fafc; stroke: #334155; stroke-width: 2; }
+      .table { fill: #eaf2f8; stroke: #334155; stroke-width: 2; }
+      .entry { fill: #fff; stroke: #64748b; stroke-width: 1.4; }
+      .wire { fill: none; stroke: #263238; stroke-width: 2.4; marker-end: url(#arrow); }
+      .update { fill: none; stroke: #b45309; stroke-width: 2.4; stroke-dasharray: 8 6; marker-end: url(#update-arrow); }
+      .accent { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 2; }
+      .update-box { fill: #fff7ed; stroke: #c2410c; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect width="1680" height="1020" fill="#fff"/>
+  <text x="40" y="46" class="title">pm_predictor: lookup and update</text>
+  <path d="M42 78 H92" class="wire"/>
+  <text x="105" y="83" class="small">lookup / prediction</text>
+  <path d="M270 78 H320" class="update"/>
+  <text x="333" y="83" class="small">training after actual outcome</text>
+
+  <!-- Address index -->
+  <text x="40" y="132" class="label">Branch address</text>
+  <rect x="40" y="146" width="260" height="68" rx="6" class="block"/>
+  <text x="60" y="187" class="body">… | b5 | b4 | b3 | b2 | b1 | b0</text>
+  <path d="M127 214 V245 H350" class="wire"/>
+  <text x="152" y="239" class="small">address[5:2]</text>
+  <rect x="350" y="215" width="230" height="68" rx="8" class="accent"/>
+  <text x="465" y="243" text-anchor="middle" class="label">branch_index</text>
+  <text x="465" y="266" text-anchor="middle" class="small">(address &gt;&gt; 2) &amp; 0xF</text>
+
+  <!-- Global history and hash -->
+  <text x="40" y="346" class="label">Global history</text>
+  <rect x="40" y="360" width="260" height="78" rx="8" class="accent"/>
+  <text x="170" y="390" text-anchor="middle" class="small">4-bit shift register</text>
+  <text x="170" y="418" text-anchor="middle" class="body">H3 | H2 | H1 | H0</text>
+  <circle cx="465" cy="390" r="44" fill="#fff" stroke="#334155" stroke-width="2"/>
+  <text x="465" y="397" text-anchor="middle" class="label">XOR</text>
+  <path d="M465 283 V345" class="wire"/>
+  <path d="M300 399 H421" class="wire"/>
+  <path d="M509 390 H548 V255 H600" class="wire"/>
+
+  <!-- Global table -->
+  <rect x="600" y="112" width="610" height="330" rx="8" class="table"/>
+  <text x="905" y="143" text-anchor="middle" class="label">Global table · 4 set rows × 2 way columns = 8 entries</text>
+  <text x="905" y="166" text-anchor="middle" class="small">hash[3:2] selects one row · compare hash[1:0] in both ways</text>
+  <text x="785" y="191" text-anchor="middle" class="body" font-weight="700">Way 0</text>
+  <text x="1073" y="191" text-anchor="middle" class="body" font-weight="700">Way 1</text>
+  <text x="617" y="213" class="tiny">Set</text>
+  <text x="827" y="213" text-anchor="middle" class="tiny">V | 2-bit tag | one 2-bit counter</text>
+  <text x="1082" y="213" text-anchor="middle" class="tiny">V | 2-bit tag | one 2-bit counter</text>
+  <g>
+    <rect x="615" y="222" width="70" height="46" class="entry"/>
+    <rect x="688" y="222" width="278" height="46" class="entry"/>
+    <rect x="969" y="222" width="226" height="46" class="entry"/>
+    <rect x="615" y="271" width="70" height="46" class="entry"/>
+    <rect x="688" y="271" width="278" height="46" class="entry"/>
+    <rect x="969" y="271" width="226" height="46" class="entry"/>
+    <rect x="615" y="320" width="70" height="46" class="entry"/>
+    <rect x="688" y="320" width="278" height="46" class="entry"/>
+    <rect x="969" y="320" width="226" height="46" class="entry"/>
+    <rect x="615" y="369" width="70" height="46" class="entry"/>
+    <rect x="688" y="369" width="278" height="46" class="entry"/>
+    <rect x="969" y="369" width="226" height="46" class="entry"/>
+  </g>
+  <g class="small" text-anchor="middle">
+    <text x="650" y="250">Set 0</text><text x="650" y="299">Set 1</text>
+    <text x="650" y="348">Set 2</text><text x="650" y="397">Set 3</text>
+  </g>
+  <g class="tiny" text-anchor="middle">
+    <text x="827" y="250">V | tag | one 2-bit counter</text>
+    <text x="1082" y="250">V | tag | one 2-bit counter</text>
+    <text x="827" y="299">V | tag | one 2-bit counter</text>
+    <text x="1082" y="299">V | tag | one 2-bit counter</text>
+    <text x="827" y="348">V | tag | one 2-bit counter</text>
+    <text x="1082" y="348">V | tag | one 2-bit counter</text>
+    <text x="827" y="397">V | tag | one 2-bit counter</text>
+    <text x="1082" y="397">V | tag | one 2-bit counter</text>
+  </g>
+
+  <!-- Global hit and counter selection -->
+  <path d="M509 390 H550 V515 H610" class="wire"/>
+  <text x="500" y="559" class="small">hash[1:0] tag</text>
+  <path d="M760 442 V478" class="wire"/>
+  <rect x="610" y="478" width="300" height="104" rx="8" class="block"/>
+  <text x="760" y="506" text-anchor="middle" class="label">Tag compare</text>
+  <text x="760" y="531" text-anchor="middle" class="small">valid &amp; tag match in either way?</text>
+  <text x="760" y="557" text-anchor="middle" class="small">outputs hit and matching way</text>
+  <path d="M910 530 H950" class="wire"/>
+  <rect x="950" y="478" width="280" height="104" rx="8" class="block"/>
+  <text x="1090" y="506" text-anchor="middle" class="label">Read global counter</text>
+  <text x="1090" y="531" text-anchor="middle" class="small">matched_way.counter (2 bits)</text>
+  <text x="1090" y="557" text-anchor="middle" class="small">counter ≥ 2 → taken</text>
+  <path d="M1230 530 H1370 V590 H1430" class="wire"/>
+  <text x="1250" y="516" class="small">global prediction</text>
+
+  <!-- Bimodal table and local prediction -->
+  <path d="M580 249 H590 V680 H485 V766 H510" class="wire"/>
+  <text x="492" y="666" class="small">branch_index</text>
+  <rect x="510" y="680" width="570" height="170" rx="8" class="table"/>
+  <text x="795" y="710" text-anchor="middle" class="label">Bimodal table · 16 counters</text>
+  <text x="795" y="733" text-anchor="middle" class="small">branch_index selects one 2-bit saturating counter</text>
+  <g class="tiny" text-anchor="middle">
+    <g>
+      <rect x="530" y="748" width="64" height="38" class="entry"/><rect x="596" y="748" width="64" height="38" class="entry"/>
+      <rect x="662" y="748" width="64" height="38" class="entry"/><rect x="728" y="748" width="64" height="38" class="entry"/>
+      <rect x="794" y="748" width="64" height="38" class="entry"/><rect x="860" y="748" width="64" height="38" class="entry"/>
+      <rect x="926" y="748" width="64" height="38" class="entry"/><rect x="992" y="748" width="64" height="38" class="entry"/>
+      <text x="562" y="772">0 · 2b</text><text x="628" y="772">1 · 2b</text>
+      <text x="694" y="772">2 · 2b</text><text x="760" y="772">3 · 2b</text>
+      <text x="826" y="772">4 · 2b</text><text x="892" y="772">5 · 2b</text>
+      <text x="958" y="772">6 · 2b</text><text x="1024" y="772">7 · 2b</text>
+      <rect x="530" y="790" width="64" height="38" class="entry"/><rect x="596" y="790" width="64" height="38" class="entry"/>
+      <rect x="662" y="790" width="64" height="38" class="entry"/><rect x="728" y="790" width="64" height="38" class="entry"/>
+      <rect x="794" y="790" width="64" height="38" class="entry"/><rect x="860" y="790" width="64" height="38" class="entry"/>
+      <rect x="926" y="790" width="64" height="38" class="entry"/><rect x="992" y="790" width="64" height="38" class="entry"/>
+      <text x="562" y="814">8 · 2b</text><text x="628" y="814">9 · 2b</text>
+      <text x="694" y="814">10 · 2b</text><text x="760" y="814">11 · 2b</text>
+      <text x="826" y="814">12 · 2b</text><text x="892" y="814">13 · 2b</text>
+      <text x="958" y="814">14 · 2b</text><text x="1024" y="814">15 · 2b</text>
+    </g>
+  </g>
+  <path d="M1080 765 H1120" class="wire"/>
+  <rect x="1120" y="725" width="190" height="80" rx="8" class="block"/>
+  <text x="1215" y="755" text-anchor="middle" class="label">Bimodal prediction</text>
+  <text x="1215" y="780" text-anchor="middle" class="small">counter ≥ 2 → taken</text>
+
+  <!-- Hit-controlled prediction mux -->
+  <path d="M910 505 V456 H1485 V535" class="wire"/>
+  <text x="927" y="449" class="small">hit selects global</text>
+  <path d="M1310 765 H1370 V640 H1430" class="wire"/>
+  <path d="M1430 535 L1550 565 L1550 665 L1430 695 Z" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>
+  <text x="1488" y="583" text-anchor="middle" class="label">MUX</text>
+  <text x="1488" y="609" text-anchor="middle" class="small">hit ? global</text>
+  <text x="1488" y="632" text-anchor="middle" class="small">: bimodal</text>
+  <path d="M1550 615 H1600" class="wire"/>
+  <rect x="1600" y="584" width="66" height="62" rx="8" class="accent"/>
+  <text x="1633" y="610" text-anchor="middle" class="small">Taken /</text>
+  <text x="1633" y="630" text-anchor="middle" class="small">not taken</text>
+
+  <!-- Update behavior, separated from lookup wiring -->
+  <text x="40" y="892" class="label">After the actual outcome arrives</text>
+  <rect x="40" y="910" width="220" height="78" rx="8" class="update-box"/>
+  <text x="150" y="941" text-anchor="middle" class="label">Actual outcome</text>
+  <text x="150" y="966" text-anchor="middle" class="small">taken or not taken</text>
+  <path d="M260 949 H310" class="update"/>
+  <rect x="310" y="910" width="360" height="78" rx="8" class="update-box"/>
+  <text x="490" y="941" text-anchor="middle" class="label">Train bimodal counter</text>
+  <text x="490" y="966" text-anchor="middle" class="small">always updated for a conditional branch</text>
+  <path d="M670 949 H720" class="update"/>
+  <rect x="720" y="910" width="430" height="78" rx="8" class="update-box"/>
+  <text x="935" y="941" text-anchor="middle" class="label">Update global entry</text>
+  <text x="935" y="966" text-anchor="middle" class="small">hit: train counter · miss: allocate/reinit, then train</text>
+  <path d="M1150 949 H1200" class="update"/>
+  <rect x="1200" y="910" width="466" height="78" rx="8" class="update-box"/>
+  <text x="1433" y="941" text-anchor="middle" class="label">Advance state</text>
+  <text x="1433" y="966" text-anchor="middle" class="small">shift outcome into history · update LRU way</text>
+</svg>
