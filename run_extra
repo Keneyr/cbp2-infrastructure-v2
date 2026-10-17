@@ -4,10 +4,10 @@ if ( $1 == "" ) then
 	exit 1
 endif
 if ( ! { cd src; make -q } ) then
-	printf "predict program is not up to date.\n"
+	printf "predict_extra_credit program is not up to date.\n"
 endif
-if ( ! -e src/predict ) then
-	printf "predict program is not built.\n"
+if ( ! -e src/predict_extra_credit ) then
+	printf "predict_extra_credit program is not built.\n"
 	exit 1
 endif
 set trace_list = `find $1 -name '*.trace.*' | sort`
@@ -15,7 +15,7 @@ set sum = 0
 set n = 0
 foreach i ( $trace_list )
 	printf "%-40s\t" $i 
-	set mpki = `./src/predict_extra_credit $i | tail -1 | sed -e '/MPKI/s///'`
+	set mpki = `./src/predict_extra_credit $i | tail -1 | sed -e 's/.*Target: //' -e 's/ MPKI.*//'`
 	printf "%0.3f\n" $mpki
 	set sum = `printf "$sum\n$mpki\n+\np\n" | dc`
 	@ n = $n + 1

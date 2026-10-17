@@ -132,7 +132,13 @@ make -C src
 ./run traces
 ```
 
-The script prints one score per benchmark and then the average. MPKI means mispredictions per 1,000 instructions; lower is better.
+The script prints one score per benchmark and then the average. MPKI means mispredictions per 1,000 instructions:
+
+```text
+MPKI = mispredictions / instructions x 1,000
+```
+
+Each trace represents 100 million instructions. The direction results below use direction mispredictions; the extra-credit results use target mispredictions. Both averages are arithmetic averages across the 20 traces.
 
 ## Results
 
@@ -163,7 +169,7 @@ These results are from the handbook-matching design with one 2-bit counter per g
 
 ### Extra-credit target prediction results
 
-The extra-credit driver uses the same `pm_predictor` direction component, so its direction MPKI matches the table above. The following values are target mispredictions per 1,000 instructions, measured by running `predict_extra_credit` on each trace:
+The extra-credit driver uses the same `pm_predictor` direction component, so its direction MPKI matches the table above. Run `./run_extra traces` from the project root to collect the target-prediction results. This script runs `predict_extra_credit` once per trace and reports target mispredictions per 1,000 instructions:
 
 | Benchmark | Target MPKI |
 |---|---:|
@@ -188,4 +194,12 @@ The extra-credit driver uses the same `pm_predictor` direction component, so its
 | `256.bzip2` | 245.863 |
 | `300.twolf` | 130.989 |
 
-The average target MPKI was **137.731**; `252.eon` had the lowest target MPKI at **77.250**, while `256.bzip2` had the highest at **245.863**.
+The average target MPKI was **137.730**; `252.eon` had the lowest target MPKI at **77.250**, while `256.bzip2` had the highest at **245.863**.
+
+### Interpreting the results
+
+Direction prediction answers **“Will this conditional branch be taken?”** Target prediction answers **“What address will it branch to?”** These are separate predictions: a branch can have the correct direction but the wrong destination, or the wrong direction but a correct destination. For example, predicting “taken” correctly but predicting `0x200` instead of the actual target `0x240` is a target error, not a direction error.
+
+Both MPKI values are errors per 1,000 instructions, not percentages, and they count different things. In this project, the extra-credit driver compares the predicted target with the trace target on every conditional branch record, including not-taken branches. Therefore, the **137.730 target MPKI should not be read as a direction score or compared directly with 38.983 direction MPKI**. The target table is direct-mapped and predicts address 0 on a miss, so cold misses and slot conflicts can contribute target errors.
+
+Across these traces, `256.bzip2` has the highest MPKI in both tables (88.448 direction, 245.863 target), while the lowest scores differ: `205.raytrace` for direction (12.720) and `252.eon` for target (77.250). This indicates that the traces stress direction and target prediction differently; the figures do not, by themselves, compare PM against another direction predictor.
